@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 // Isso pode ser adequadamento substituído por um genérico, ex: Repository<Cliente>
 // mas PHP não tem genérico, apenas workarounds pra conseguir fazer a mesma coisa.
 
-class ClienteRepository implements IRepository{
+class ClienteRepository {
 
     public function getAll(){
         return DB::table("clientes")->get();
@@ -24,19 +24,22 @@ class ClienteRepository implements IRepository{
     }
 
     public function create($cliente){
-        return DB::insert("insert into clientes (nome, cic, endereco) values (?, ?, ?)",[
+        return DB::insert("insert into clientes (nome, cic, endereco, created_at, updated_at) values (?, ?, ?, ?, ?)",[
                 $cliente->nome,
                 $cliente->cic,
-                $cliente->endereco
+                $cliente->endereco,
+                now(),
+                now()
             ]);
     }
 
     public function update($cliente){
-        return DB::update("update clientes set nome = ?, cic = ?, endereco = ? WHERE id = ?",[
+        return DB::update("update clientes set nome = ?, cic = ?, endereco = ?, updated_at =? WHERE id = ?",[
                 $cliente->nome,
                 $cliente->cic,
                 $cliente->endereco,
-                $cliente->id
+                now(),
+                $cliente->id,
             ]);
     }
 }

@@ -4,23 +4,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Cliente;
 use App\Repositories\ClienteRepository;
-
+use App\Http\Controllers\ClienteController;
 
 // Vistas
 // gostei de como o laravel tira essa dependência literalmente do além
-Route::get('/', function (ClienteRepository $repo) {
+// se fosse criar uma "api rest", teria usado Route::resource e um 
+// "controller"
+
+Route::get('/', function (ClienteController $c) {
     return view('index',[
-        "clientes" => $repo->getAll()
+        "clientes" => $c->getAll()
     ]);
 });
 
 Route::get('/editar/{id}', function(int $id, ClienteRepository $repo){
     $cliente = $repo->get($id);
-
     if(!is_object($cliente)){
         return redirect("/");
     }
-
     return view('editar',[
         "cliente" => $cliente
     ]);
@@ -43,27 +44,15 @@ Route::get('/deletar/{id}', function($id, ClienteRepository $repo){
 });
 
 // Criações / Mutações.
-Route::post('/clientes/criar', function (Request $request, ClienteRepository $repo ){
-    $nome    = $request->input("nome");
-    $cic     = $request->input("cic");
-    $endereco= $request->input("endereco");
-
-    $cliente = new Cliente(0, $nome, $cic, $endereco);
-    $repo->create($cliente);
-
+Route::post('/clientes/criar', function (Request $request, ClienteController $c ){
+    $c->store($request);
     return redirect('/');
 });
 
 // Usando post só por causa do form, que não aceita método
 // put ou patch.
-Route::post('/clientes/editar/{id}', function (int $id, Request $request, ClienteRepository $repo){
-    $nome     = $request->input("nome");
-    $cic      = $request->input("cic");
-    $endereco = $request->input("endereco");
-
-    $cliente = new Cliente($id, $nome, $cic, $endereco);
-    $repo->update($cliente);
-
+Route::post('/clientes/editar/{id}', function (int $id, Request $request, ClienteController $c){
+    $c->update($id, $request);
     return redirect('/');
 });
 

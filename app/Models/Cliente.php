@@ -10,6 +10,8 @@ class Cliente extends Model{
     public $nome;
     public $cic;
     public $endereco;
+    public $timestamps = true;
+
 
     public function __construct($id, $nome, $cic, $endereco){
         $this->id = $id;
